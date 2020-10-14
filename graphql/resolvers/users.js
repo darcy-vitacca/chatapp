@@ -1,8 +1,8 @@
 const bcrypt = require("bcryptjs");
-const { User } = require("../models");
+const { User, Message } = require("../../models");
 const { UserInputError, AuthenticationError } = require("apollo-server");
 const jwt = require("jsonwebtoken");
-const { JWT_SECRET } = require("../config/env.json");
+const { JWT_SECRET } = require("../../config/env.json");
 const { Op } = require("sequelize");
 
 // A map of functions which return data for the schema.
@@ -12,24 +12,30 @@ const { Op } = require("sequelize");
 //When sql is looking up unqiue it will stop after the first thing fails
 module.exports = {
   Query: {
-    getUsers: async (_, __, context) => {
+    getUsers: async (_, __, { user }) => {
       try {
-        let user;
-        if (context.req && context.req.headers.authorization) {
-          //this extracts the token from the header and takes the bearer part out the use jwt to compare the token and see if it was issued usinng our signature
-          const token = context.req.headers.authorization.split("Bearer ")[1];
-          // console.log(token);
-          jwt.verify(token, JWT_SECRET, (err, decodedToken) => {
-            if (err) {
-              throw new AuthenticationError();
-            }
-            user = decodedToken;
-            // console.log(user);
-          });
-        }
+        if (!user) throw new AuthenticationError("Unauthenticated");
+
         //this gets all the users besides our authenticated user
-        const users = await User.findAll({
-          where:{ username : {[Op.ne] : user.username}}
+        let users = await User.findAll({
+          attributes: ["username", "imageUrl", "createdAt"],
+          where: { username: { [Op.ne]: user.username } },
+        });
+
+        const allUserMessages = await Message.findAll({
+          where: {
+            [Op.or]: [{ from: user.username }, { to: user.username }],
+          },
+          order: [["createdAt", "DESC"]],
+        });
+        //This goes over all the messages isntead of using many sql queries and goes over using js to find the latest message of each person
+        users = users.map(otherUser => {
+          const latestMessage = allUserMessages.find(
+            (m) => m.from === otherUser.username || m.to === otherUser.username
+          );
+          otherUser.latestMessage = latestMessage;
+
+          return otherUser;
         });
         return users;
       } catch (err) {
@@ -84,6 +90,7 @@ module.exports = {
   },
 
   Mutation: {
+    //REGISTER USE
     register: async (_, args) => {
       let { username, email, password, confirmPassword } = args;
       let errors = {};
@@ -103,7 +110,6 @@ module.exports = {
         //Check user / email exists
         // const userByUsername = await User.findOne({where: {username}})
         // const userByEmail = await User.findOne({where: {email}})
-
         // if (userByUsername) errors.username= "Username is taken"
         // if (userByEmail) errors.email= "Email is taken"
 
