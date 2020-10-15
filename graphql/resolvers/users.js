@@ -2,7 +2,7 @@ const bcrypt = require("bcryptjs");
 const { User, Message } = require("../../models");
 const { UserInputError, AuthenticationError } = require("apollo-server");
 const jwt = require("jsonwebtoken");
-const { JWT_SECRET } = require("../../config/env.json");
+
 const { Op } = require("sequelize");
 
 // A map of functions which return data for the schema.
@@ -71,7 +71,7 @@ module.exports = {
           errors.password = "password is incorrect";
           throw new UserInputError("Password is incorrect", { errors });
         }
-        const token = jwt.sign({ username }, JWT_SECRET, {
+        const token = jwt.sign({ username }, process.env.JWT_SECRET, {
           expiresIn: 60 * 60,
         });
 
