@@ -69,7 +69,6 @@ export default function Message({ message }) {
   )
 
   return (
-    //Tool
     <div
       className={classNames('d-flex my-3', {
         'ml-auto': sent,

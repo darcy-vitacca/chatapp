@@ -43,7 +43,7 @@ const host = window.location.host
 
 //This handles websocket connections and needs to include graphql because that's where our webtoken is we also check for a token 
 const wsLink = new WebSocketLink({
-  uri: `ws://${host}/graphql`,
+  uri: `ws://${host}/graphql/`,
   options: {
     reconnect: true,
     connectionParams:{

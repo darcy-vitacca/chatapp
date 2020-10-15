@@ -51,7 +51,7 @@ const messageReducer = (state, action) => {
       };
 
       usersCopy[userIndex] = newUser;
-dasdasd
+
       return {
         ...state,
         users: usersCopy,

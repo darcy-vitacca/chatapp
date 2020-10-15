@@ -1,1 +1,6 @@
 /usr/local/mysql/bin/mysql -u root -p
+//server conneciton
+/usr/local/mysql/bin/mysql -u admin -p -h
+
+regex to find minify error
+\(\s*\n?\s*//
