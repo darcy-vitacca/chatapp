@@ -4,7 +4,7 @@ This Chat app allows users to see other users and chat to them in real time. As 
 
 
 #### Find it here:
-https://trade-connect.com.au/
+http://13.210.22.157/
 
 #### Test Login and Password:
 john@email.com
