@@ -7,7 +7,7 @@ This Chat app allows users to see other users and chat to them in real time. As 
 http://13.210.22.157/
 
 #### Test Login and Password:
-john@email.com
+john
 123456
 
 #### This is the Chat interface where you can select which user you want to talk to and send messages and react to them.
